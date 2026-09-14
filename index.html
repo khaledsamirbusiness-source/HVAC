@@ -848,6 +848,154 @@ button,input{font:inherit}.shell{width:100%;padding:12px clamp(10px,1.6vw,24px) 
 </style>
 
 
+
+<style>
+/* ===== ترتيب المناطق / المدن حسب نسبة الإكتمال ===== */
+.workflow-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.workflow-title-wrap > b{
+  min-width:0;
+}
+.workflow-rank-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+  min-height:30px;
+  padding:4px 9px 4px 7px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#eef8fb 0%,#ffffff 100%);
+  border:1px solid #cfe5ec;
+  box-shadow:0 4px 12px rgba(16,91,120,.08);
+  color:#60788c;
+  line-height:1;
+}
+.workflow-rank-badge .workflow-rank-label{
+  font-size:8.5px;
+  font-weight:800;
+  color:#7a8fa2;
+  white-space:nowrap;
+}
+.workflow-rank-badge strong{
+  display:grid;
+  place-items:center;
+  width:23px;
+  height:23px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#0e8e9f,#087487);
+  color:#fff;
+  font-size:12px;
+  font-weight:950;
+  box-shadow:0 3px 8px rgba(8,116,135,.18);
+}
+
+/* إبراز أول ثلاثة بشكل راقٍ بدون تغيير هوية الداش بورد */
+.workflow-card:nth-child(2) .workflow-rank-badge strong{
+  background:linear-gradient(135deg,#d6a51e,#f1c84a);
+  color:#5f4500;
+}
+.workflow-card:nth-child(3) .workflow-rank-badge strong{
+  background:linear-gradient(135deg,#9aa9b7,#c7d0d8);
+  color:#314252;
+}
+.workflow-card:nth-child(4) .workflow-rank-badge strong{
+  background:linear-gradient(135deg,#b77748,#d49a6d);
+  color:#fff;
+}
+
+@media(max-width:800px){
+  .workflow-rank-badge{
+    padding:3px 7px 3px 5px;
+    gap:4px;
+  }
+  .workflow-rank-badge .workflow-rank-label{
+    font-size:7.5px;
+  }
+  .workflow-rank-badge strong{
+    width:21px;
+    height:21px;
+    font-size:10.5px;
+  }
+}
+</style>
+
+
+<style>
+/* ===== تحسين شارة الترتيب الرقمية فقط ===== */
+.workflow-rank-badge{
+  display:inline-grid!important;
+  place-items:center!important;
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  padding:0!important;
+  border-radius:12px!important;
+  background:linear-gradient(145deg,#0b8fa0 0%,#0b7387 100%)!important;
+  border:1px solid rgba(255,255,255,.7)!important;
+  box-shadow:
+    0 5px 14px rgba(8,116,135,.20),
+    inset 0 1px 0 rgba(255,255,255,.28)!important;
+  color:#fff!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+.workflow-rank-badge::after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border-radius:9px;
+  border:1px solid rgba(255,255,255,.18);
+  pointer-events:none;
+}
+.workflow-rank-badge strong{
+  position:relative!important;
+  z-index:1!important;
+  width:auto!important;
+  height:auto!important;
+  display:block!important;
+  background:none!important;
+  box-shadow:none!important;
+  color:#fff!important;
+  font-size:15px!important;
+  font-weight:950!important;
+  line-height:1!important;
+  letter-spacing:.1px!important;
+}
+
+/* أول 3 مراكز بشكل احترافي */
+.workflow-card:nth-child(2) .workflow-rank-badge{
+  background:linear-gradient(145deg,#f0c84a,#c99b17)!important;
+  box-shadow:0 5px 14px rgba(201,155,23,.22),inset 0 1px 0 rgba(255,255,255,.35)!important;
+}
+.workflow-card:nth-child(2) .workflow-rank-badge strong{color:#5f4500!important;}
+
+.workflow-card:nth-child(3) .workflow-rank-badge{
+  background:linear-gradient(145deg,#c7d0d8,#8f9eab)!important;
+  box-shadow:0 5px 14px rgba(93,110,126,.18),inset 0 1px 0 rgba(255,255,255,.35)!important;
+}
+.workflow-card:nth-child(3) .workflow-rank-badge strong{color:#2f4050!important;}
+
+.workflow-card:nth-child(4) .workflow-rank-badge{
+  background:linear-gradient(145deg,#d49a6d,#a96539)!important;
+  box-shadow:0 5px 14px rgba(169,101,57,.18),inset 0 1px 0 rgba(255,255,255,.28)!important;
+}
+
+@media(max-width:800px){
+  .workflow-rank-badge{
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    border-radius:10px!important;
+  }
+  .workflow-rank-badge::after{border-radius:7px!important;}
+  .workflow-rank-badge strong{font-size:13px!important;}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -1028,7 +1176,7 @@ function workflowStats(rows){
     startRate:pct(complete+draft,total)
   };
 }
-function workflowCard(label,rows,total=false){
+function workflowCard(label,rows,total=false,rank=null){
   const s=workflowStats(rows),
         w=x=>s.total?100*x/s.total:0,
         completion=Math.max(0,Math.min(100,s.rate)),
@@ -1048,7 +1196,12 @@ function workflowCard(label,rows,total=false){
 
   return `<div class="workflow-card ${total?'total':''}">
     <div class="workflow-top">
-      <b>${esc(label)}</b>
+      <div class="workflow-title-wrap">
+        ${rank?`<span class="workflow-rank-badge" title="الترتيب حسب نسبة الإكتمال">
+          <strong>${rank}</strong>
+        </span>`:''}
+        <b>${esc(label)}</b>
+      </div>
       <span>${s.total.toLocaleString('ar')} مبنى</span>
     </div>
     <div class="stackbar">
@@ -1083,7 +1236,7 @@ function renderWorkflow(rows){
 
   $('workflowStack').innerHTML=
     workflowCard('الإجمالي',rows,true)+
-    groups.map(g=>workflowCard(g.label,g.rows)).join('');
+    groups.map((g,i)=>workflowCard(g.label,g.rows,false,i+1)).join('');
 }
 function supervisorRows(rows){
   const useCities=singleRegionContext(rows);
